@@ -28,3 +28,6 @@ lonlat.Matrix.res <- spTransform(S, CRS(proj_modis_sinusoidal))
 # transform MODIS to SciDB's col_id, row_id
 res <- .sinusoidal2gmpi(t(bbox(lonlat.Matrix.res)), pixelSize)
 res
+
+# NOTE: Due to origin differences in the SRS (MODIS sinusoidal versus SciDB's col_id, row_id), the min & max values are inverted
+
