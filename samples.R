@@ -6,6 +6,13 @@
 library(sp)
 source("/scidbUtil.R")
 
+
+
+#-------------------------------
+# coordinates transformation
+# WGS84 to col_id row_id
+#-------------------------------
+
 # calculate the size of a pixel
 pixelSize <- .calcPixelSize(4800, .calcTileWidth())
 
@@ -32,5 +39,14 @@ res <- .sinusoidal2gmpi(t(bbox(lonlat.Matrix.res)), pixelSize)
 res
 
 # NOTE: Due to origin differences in the SRS (MODIS sinusoidal versus SciDB's col_id, row_id), the min & max values are inverted
+ 
+ 
+ 
+#-------------------------------
+# transform time_id into dates
+#-------------------------------
+tid <- 1:10
+MOD13Q1.period <- 16 
+date.vector <- .time_id2date(time_id.vector = tid, period = MOD13Q1.period)
 
-  
+
