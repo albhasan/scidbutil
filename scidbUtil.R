@@ -356,6 +356,23 @@ missingtids <- function(tid){
 
 
 
+# Calculate the col_id & row_id corresponding to the given WGS84 coordinates
+#
+# @param lonlat.Matrix A numeric matrix with 2 columns: lon and lat on WGS84
+# @param pixelSize Pixel size in meters
+# @return A 2-column matrix (col_id and row_id)
+.wgs84gmpi <- function(lonlat.Matrix, pixelSize){
+  proj4326 <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
+  proj_modis_sinusoidal <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
+  S <- SpatialPoints(lonlat.Matrix)
+  proj4string(S) <-CRS(proj4326)
+  llmat <- spTransform(S, CRS(proj_modis_sinusoidal))
+  res <- .sinusoidal2gmpi(llmat@coords, pixelSize)
+  rownames(res) <- NULL
+  colnames(res) <- c('col_id', 'row_id')
+  return(res)
+}
+
 
 
 #-------------------------------------------------------
@@ -588,3 +605,5 @@ getCSBFastData <- function(){
   res <- substr(x, nchar(x)-n+1, nchar(x))
   return(res)
 }
+
+
