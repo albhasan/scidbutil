@@ -346,9 +346,9 @@ missingtids <- function(tid){
 .wgs84gmpi <- function(lonlat.Matrix, pixelSize){
   proj4326 <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
   proj_modis_sinusoidal <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
-  S <- SpatialPoints(lonlat.Matrix)
-  proj4string(S) <-CRS(proj4326)
-  llmat <- spTransform(S, CRS(proj_modis_sinusoidal))
+  S <- sp::SpatialPoints(lonlat.Matrix)
+  sp::proj4string(S) <- sp::CRS(proj4326)
+  llmat <- sp::spTransform(S, sp::CRS(proj_modis_sinusoidal))
   res <- .sinusoidal2gmpi(llmat@coords, pixelSize)
   rownames(res) <- NULL
   colnames(res) <- c('col_id', 'row_id')
@@ -418,7 +418,7 @@ missingtids <- function(tid){
 # @param sdbdf A data frame made of MODIS data. The ID columns must be named as "col_id", "row_id", and "time_id"
 # @return A data frame with additional columns
 addPosition <- function(sdbdf, period, startyear){
-  #sinus = CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
+  #sinus = sp::CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
   pixelSize <- .calcPixelSize(4800, .calcTileWidth())
   # get unique positions from the data
   cr.id <- unique(sdbdf[c("col_id", "row_id")])
@@ -486,8 +486,8 @@ sampleTS <- function(ts.df, sampletime){
       if(sampletime[stid] > r0[1] && sampletime[stid] <= r1[1]){
         x <- as.numeric(c(r0[1], r1[1])) # time
         y <- as.numeric(c(r0[2], r1[2])) # value
-        m <- lm(y~x)
-        val[stid] <- predict.lm(m, newdata = data.frame(x = sampletime[stid]))
+        m <- stats::lm(y~x)
+        val[stid] <- stats::predict.lm(m, newdata = data.frame(x = sampletime[stid]))
       }else if(sampletime[stid] == r0[1]){
         val[stid] <- r0[2]
       }
@@ -503,14 +503,13 @@ sampleTS <- function(ts.df, sampletime){
 # Get the data used by Christopher Stephan on his thesis "Automating Near Real-Time Deforestation Monitoring With Satellite Image Time Series"
 #
 getCSBFastData <- function(){
-  library(scidb)
-  scidbconnect(host = "localhost")
+  scidb::scidbconnect(host = "localhost")
   #BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400); --    191 100 cells
   #BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400); -- 22 604 400 cells
-  siteA <- iquery("BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
+  siteA <- scidb::iquery("BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
   save(siteA, file = "siteA.Rbin")
   rm(siteA)
-  siteB <- iquery("BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
+  siteB <- scidb::iquery("BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
   save(siteB, file = "siteB.Rbin")
 }
 
