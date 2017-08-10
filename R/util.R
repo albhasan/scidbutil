@@ -2,36 +2,6 @@
 
 
 
-# Add position columns to MODIS data retrieved from a SciDB's 3D array
-#
-# @param sdbdf A data frame made of MODIS data. The ID columns must be named as "col_id", "row_id", and "time_id"
-# @return A data frame with additional columns
-.addPosition <- function(sdbdf, period, startyear){
-  #sinus = sp::CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
-  pixelSize <- .calcPixelSize(4800, .calcTileWidth())
-  # get unique positions from the data
-  cr.id <- unique(sdbdf[c("col_id", "row_id")])
-  t.id <- unique(sdbdf["time_id"])
-  # add MODIS SINUSOIDAL coordinates
-  xy.sin <- cbind(cr.id, .getxyMatrix(as.matrix(cr.id), pixelSize))
-  xy.sin["crid"] <- apply(xy.sin[ , c("col_id", "row_id")] , 1 , paste , collapse = "-" )
-  xy.sin["col_id"] <- xy.sin["row_id"] <- NULL
-  # add year-day-of-the-year
-  t.ydoy <- cbind(t.id, .grid2date(unlist(t.id), period, startyear))
-  colnames(t.ydoy)[2] <- "ydoy"
-  sdbdf["crid"] <- apply(sdbdf[ , c("col_id", "row_id")] , 1 , paste , collapse = "-" )
-  sdbdf <- merge(sdbdf, t.ydoy, by = "time_id")
-  sdbdf <- merge(sdbdf, xy.sin, by ="crid")
-  # add dates from ydoy
-  if("cdoy" %in% names(sdbdf)){ # uses the reported DOY when available
-    sdbdf["ydoy"] <- (floor(sdbdf["ydoy"] / 1000) * 1000) + sdbdf["cdoy"]
-  }
-  sdbdf["datetime"] <- .ydoy2date(unlist(sdbdf["ydoy"]))
-  return(sdbdf)
-}
-
-
-
 # Return a time index (timid) from the input date (MODIS DOY) and time period (e.g 8 days).
 #
 # @param dateDOY Input day in year and day-of-the-year format (e.g 2001032 is Febraury the 2nd of 2001)
@@ -289,6 +259,36 @@
 
 
 #---- SPACE FUNCTIONS ----
+
+
+
+# Add position columns to MODIS data retrieved from a SciDB's 3D array
+#
+# @param sdbdf A data frame made of MODIS data. The ID columns must be named as "col_id", "row_id", and "time_id"
+# @return A data frame with additional columns
+.addPosition <- function(sdbdf, period, startyear){
+  #sinus = sp::CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
+  pixelSize <- .calcPixelSize(4800, .calcTileWidth())
+  # get unique positions from the data
+  cr.id <- unique(sdbdf[c("col_id", "row_id")])
+  t.id <- unique(sdbdf["time_id"])
+  # add MODIS SINUSOIDAL coordinates
+  xy.sin <- cbind(cr.id, .getxyMatrix(as.matrix(cr.id), pixelSize))
+  xy.sin["crid"] <- apply(xy.sin[ , c("col_id", "row_id")] , 1 , paste , collapse = "-" )
+  xy.sin["col_id"] <- xy.sin["row_id"] <- NULL
+  # add year-day-of-the-year
+  t.ydoy <- cbind(t.id, .grid2date(unlist(t.id), period, startyear))
+  colnames(t.ydoy)[2] <- "ydoy"
+  sdbdf["crid"] <- apply(sdbdf[ , c("col_id", "row_id")] , 1 , paste , collapse = "-" )
+  sdbdf <- merge(sdbdf, t.ydoy, by = "time_id")
+  sdbdf <- merge(sdbdf, xy.sin, by ="crid")
+  # add dates from ydoy
+  if("cdoy" %in% names(sdbdf)){ # uses the reported DOY when available
+    sdbdf["ydoy"] <- (floor(sdbdf["ydoy"] / 1000) * 1000) + sdbdf["cdoy"]
+  }
+  sdbdf["datetime"] <- .ydoy2date(unlist(sdbdf["ydoy"]))
+  return(sdbdf)
+}
 
 
 

@@ -2,17 +2,19 @@
 
 
 
-#' @title Text to POSIXlt
-#' @name text2date
+#' @title year-day-of-the-year to time_id
+#' @name date2grid
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Transforms a text date given as text to a date object.
+#' @description Return a time index (timid) from the input date (MODIS DOY) and time period (e.g 8 days).
 #'
-#' @param dateAsText Date as string
-#' @return A date object (POSIXlt)
+#' @param dateDOY Input day in year and day-of-the-year format (e.g 2001032 is Febraury the 2nd of 2001)
+#' @param period Number of days between observations (e.g 8)
+#' @param startyear Initial year of the index (e.g 2000)
+#' @return A number
 #' @export
-text2date <- function(dateAsText){
-  return(.text2date(dateAsText = dateAsText))
+date2grid <- function(dateDOY, period, startyear){
+  return(.date2grid(dateDOY = dateDOY, period = period, startyear = startyear))
 }
 
 
@@ -30,52 +32,6 @@ date2ydoy <- function(dateAsText){
   return(.date2ydoy(dateAsText = dateAsText))
 }
 
-
-
-#' @title Test for leap year
-#' @name isLeapYear
-#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
-#'
-#' @description Is the given year is a leap year?
-#'
-#' @param year Numeric year
-#' @return TRUE is the year is leap, FALSE otherwise
-#' @export
-isLeapYear <- function(year){
-  return(.isLeapYear(year = year))
-}
-
-
-
-#' @title year-day_of_the_year to a date
-#' @name ydoy2date
-#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
-#'
-#' @description Transform a date in the year-day_of_the_year format to a date
-#'
-#' @param YYYYDOY Numeric or character with 4 digits for the year and 3 for the day of the year (i.e 2012324)
-#' @return A date object
-#' @export
-ydoy2date <- function(YYYYDOY){
-  return(.ydoy2date(YYYYDOY = YYYYDOY))
-}
-
-
-
-#' @title year-day-of-the-year to time_id
-#' @name date2grid
-#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
-#'
-#' @description Return a time index (timid) from the input date (MODIS DOY) and time period (e.g 8 days).
-#'
-#' @param dateDOY Input day in year and day-of-the-year format (e.g 2001032 is Febraury the 2nd of 2001)
-#' @param period Number of days between observations (e.g 8)
-#' @param startyear Initial year of the index (e.g 2000)
-#' @return A number
-#' @export
-date2grid <- function(dateDOY, period, startyear){
-  return(.date2grid(dateDOY = dateDOY, period = period, startyear = startyear))
-}
 
 
 
@@ -97,6 +53,37 @@ grid2date <- function(time_id, period, startyear){
 
 
 
+#' @title Test for leap year
+#' @name isLeapYear
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Is the given year is a leap year?
+#'
+#' @param year Numeric year
+#' @return TRUE is the year is leap, FALSE otherwise
+#' @export
+isLeapYear <- function(year){
+  return(.isLeapYear(year = year))
+}
+
+
+
+#' @title Move dates certain number of years
+#' @name moveDateByYears
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Move a Date object a certain number of years, i.e 2000-10-31 moved 5 years becomes 2005-10-31
+#'
+#' @param Date1 A list made of Date objects
+#' @param numberOfYears An integer number representing a of years
+#' @return Date1
+#' @export
+moveDateByYears <- function(Date1, numberOfYears){
+  return(.moveDateByYears(Date1 = Date1, numberOfYears = numberOfYears))
+}
+
+
+
 #' @title Format a POSIXlt object
 #' @name POSIXlt2txt
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
@@ -108,6 +95,37 @@ grid2date <- function(time_id, period, startyear){
 #' @export
 POSIXlt2txt <- function(aPOSIXlt){
   return(.POSIXlt2txt(aPOSIXlt = aPOSIXlt))
+}
+
+
+
+#' @title Estimate the values fo the time-series for the supplied sample times
+#' @name sampleTS
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Estimate the values fo the time-series for the supplied sample times
+#'
+#' @param  ts.df data.frame with 2 columns: time and value
+#' @param  sampletime TODO
+#' @return a vector of sampled values
+#' @export
+sampleTS <- function(ts.df, sampletime){
+  return(.sampleTS(ts.df = ts.df, sampletime = sampletime))
+}
+
+
+
+#' @title Text to POSIXlt
+#' @name text2date
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Transforms a text date given as text to a date object.
+#'
+#' @param dateAsText Date as string
+#' @return A date object (POSIXlt)
+#' @export
+text2date <- function(dateAsText){
+  return(.text2date(dateAsText = dateAsText))
 }
 
 
@@ -144,7 +162,69 @@ time_id2ydoy <- function(time_id, period){
 
 
 
+#' @title year-day_of_the_year to a date
+#' @name ydoy2date
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Transform a date in the year-day_of_the_year format to a date
+#'
+#' @param YYYYDOY Numeric or character with 4 digits for the year and 3 for the day of the year (i.e 2012324)
+#' @return A date object
+#' @export
+ydoy2date <- function(YYYYDOY){
+  return(.ydoy2date(YYYYDOY = YYYYDOY))
+}
+
+
+
 #---- SPACE FUNCTIONS ----
+
+
+
+#' @title Add position columns to MODIS data retrieved from a SciDB's 3D array
+#' @name addPosition
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Add position columns to MODIS data retrieved from a SciDB's 3D array
+#'
+#' @param sdbdf A data frame made of MODIS data. The ID columns must be named as "col_id", "row_id", and "time_id"
+#' @param period Number of days between observations (e.g 8)
+#' @param startyear Initial year of the index (e.g 2000)
+#' @return A data frame with additional columns
+#' @export
+addPosition <- function(sdbdf, period, startyear){
+  return(.addPosition(sdbdf = sdbdf, period = period, startyear = startyear))
+}
+
+
+
+#' @title Calculate the length of a MODIS pixel
+#' @name calcPixelSize
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Calculate the length of a MODIS pixel. Resolution is the number of pixel in one dimension (e.g 4800)
+#'
+#' @param resolution Square root of the number of pixels on an image
+#' @param tileWidth Width of a tile
+#' @return A number
+#' @export
+calcPixelSize <- function(resolution, tileWidth){
+  return(.calcPixelSize(resolution = resolution, tileWidth = tileWidth))
+}
+
+
+
+#' @title Calculate the width of a MODIS tile
+#' @name calcTileWidth
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Calculate the width of a MODIS tile
+#'
+#' @return A number
+#' @export
+calcTileWidth <- function(){
+  return(.calcTileWidth())
+}
 
 
 
@@ -159,21 +239,6 @@ time_id2ydoy <- function(time_id, period){
 #' @export
 getHV <- function(modisTileId){
   return(.getHV(modisTileId = modisTileId))
-}
-
-
-
-#' @title Get the adquisition time of a MODIS HDF file name
-#' @name getTimeFromHdfFilename
-#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
-#'
-#' @description Get the adquisition time of a MODIS HDF file name
-#'
-#' @param hdfFilename HDF filename
-#' @return Character. A date in the format year and day of the year YYYYDOY
-#' @export
-getTimeFromHdfFilename <- function(hdfFilename){
-  return(.getTimeFromHdfFilename(hdfFilename = hdfFilename))
 }
 
 
@@ -195,32 +260,33 @@ getFirstGmip <- function(modisTileId, nrows, ncols){
 
 
 
-#' @title Calculate the width of a MODIS tile
-#' @name calcTileWidth
+#' @title Get the adquisition time of a MODIS HDF file name
+#' @name getTimeFromHdfFilename
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Calculate the width of a MODIS tile
+#' @description Get the adquisition time of a MODIS HDF file name
 #'
-#' @return A number
+#' @param hdfFilename HDF filename
+#' @return Character. A date in the format year and day of the year YYYYDOY
 #' @export
-calcTileWidth <- function(){
-  return(.calcTileWidth())
+getTimeFromHdfFilename <- function(hdfFilename){
+  return(.getTimeFromHdfFilename(hdfFilename = hdfFilename))
 }
 
 
 
-#' @title Calculate the length of a MODIS pixel
-#' @name calcPixelSize
+#' @title Get the coordinates of the center of the given pixel
+#' @name getxyMatrix
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Calculate the length of a MODIS pixel. Resolution is the number of pixel in one dimension (e.g 4800)
+#' @description Return the coords (MODIS synusoidal SR-ORG:6974) of the center of the given pixel
 #'
-#' @param resolution Square root of the number of pixels on an image
-#' @param tileWidth Width of a tile
-#' @return A number
+#' @param colrowid.Matrix A numeric matrix with 2 columns: col_id and row_id
+#' @param pixelSize Pixel size in meters
+#' @return A 2-column matrix
 #' @export
-calcPixelSize <- function(resolution, tileWidth){
-  return(.calcPixelSize(resolution = resolution, tileWidth = tileWidth))
+getxyMatrix <- function(colrowid.Matrix, pixelSize){
+  return(.getxyMatrix(colrowid.Matrix = colrowid.Matrix, pixelSize = pixelSize))
 }
 
 
@@ -243,18 +309,17 @@ ids2tile <- function(col_id, row_id, nrows, ncols){
 
 
 
-#' @title Get the coordinates of the center of the given pixel
-#' @name getxyMatrix
+#' @title Report the missing time_ids
+#' @name missingtids
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Return the coords (MODIS synusoidal SR-ORG:6974) of the center of the given pixel
+#' @description Report the missing time_ids
 #'
-#' @param colrowid.Matrix A numeric matrix with 2 columns: col_id and row_id
-#' @param pixelSize Pixel size in meters
-#' @return A 2-column matrix
+#' @param tid A vector of time ids
+#' @return A vecor with the missing time ids between the maximum and minimum time id provided
 #' @export
-getxyMatrix <- function(colrowid.Matrix, pixelSize){
-  return(.getxyMatrix(colrowid.Matrix = colrowid.Matrix, pixelSize = pixelSize))
+missingtids <- function(tid){
+  return(.missingtids(tid = tid))
 }
 
 
@@ -271,21 +336,6 @@ getxyMatrix <- function(colrowid.Matrix, pixelSize){
 #' @export
 sinusoidal2gmpi <- function(lonlat.Matrix, pixelSize){
   return(.sinusoidal2gmpi(lonlat.Matrix = lonlat.Matrix, pixelSize = pixelSize))
-}
-
-
-
-#' @title Report the missing time_ids
-#' @name missingtids
-#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
-#'
-#' @description Report the missing time_ids
-#'
-#' @param tid A vector of time ids
-#' @return A vecor with the missing time ids between the maximum and minimum time id provided
-#' @export
-missingtids <- function(tid){
-  return(.missingtids(tid = tid))
 }
 
 
@@ -359,51 +409,17 @@ getTileIdFromFilename <- function(fileName){
 
 
 
-#' @title Add position columns to MODIS data retrieved from a SciDB's 3D array
-#' @name addPosition
+#' @title Removes the first and last characters from a string
+#' @name removeFisrtLast
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Add position columns to MODIS data retrieved from a SciDB's 3D array
+#' @description Removes the first and last characters from a single string
 #'
-#' @param sdbdf A data frame made of MODIS data. The ID columns must be named as "col_id", "row_id", and "time_id"
-#' @param period Number of days between observations (e.g 8)
-#' @param startyear Initial year of the index (e.g 2000)
-#' @return A data frame with additional columns
+#' @param x A string
+#' @return A string
 #' @export
-addPosition <- function(sdbdf, period, startyear){
-  return(.addPosition(sdbdf = sdbdf, period = period, startyear = startyear))
-}
-
-
-
-#' @title Move dates certain number of years
-#' @name moveDateByYears
-#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
-#'
-#' @description Move a Date object a certain number of years, i.e 2000-10-31 moved 5 years becomes 2005-10-31
-#'
-#' @param Date1 A list made of Date objects
-#' @param numberOfYears An integer number representing a of years
-#' @return Date1
-#' @export
-moveDateByYears <- function(Date1, numberOfYears){
-  return(.moveDateByYears(Date1 = Date1, numberOfYears = numberOfYears))
-}
-
-
-
-#' @title Estimate the values fo the time-series for the supplied sample times
-#' @name sampleTS
-#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
-#'
-#' @description Estimate the values fo the time-series for the supplied sample times
-#'
-#' @param  ts.df data.frame with 2 columns: time and value
-#' @param  sampletime TODO
-#' @return a vector of sampled values
-#' @export
-sampleTS <- function(ts.df, sampletime){
-  return(.sampleTS(ts.df = ts.df, sampletime = sampletime))
+removeFisrtLast <- function(x){
+  return(.removeFisrtLast(x = x))
 }
 
 
@@ -419,21 +435,6 @@ sampleTS <- function(ts.df, sampletime){
 #' @export
 scidbProcessSchema <- function(schema){
   return(.scidbProcessSchema(schema = schema))
-}
-
-
-
-#' @title Removes the first and last characters from a string
-#' @name removeFisrtLast
-#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
-#'
-#' @description Removes the first and last characters from a single string
-#'
-#' @param x A string
-#' @return A string
-#' @export
-removeFisrtLast <- function(x){
-  return(.removeFisrtLast(x = x))
 }
 
 
