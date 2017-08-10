@@ -9,7 +9,7 @@ time_id2ydoy(time_id, period)
 \arguments{
 \item{time_id}{A time id}
 
-\item{freqperyear}{Number of time_ids a year}
+\item{period}{days between images (MOD09Q1 is 8, MOD13Q1 is 16)}
 }
 \value{
 A number

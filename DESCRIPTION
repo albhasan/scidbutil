@@ -9,11 +9,13 @@ Description: More about what it does (maybe more than one line)
 License: MIT License + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Depends: 
+Depends:
     R (>= 3.0.0)
 Imports:
-    scidb,
     sp
 Suggests:
-    testthat 
+    testthat ,
+    knitr,
+    rmarkdown
 RoxygenNote: 6.0.1
+VignetteBuilder: knitr
