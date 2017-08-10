@@ -23,7 +23,7 @@ text2date <- function(dateAsText){
 #'
 #' @description Transforms a date into the year-day_of_the_year date (YYYYDOY).
 #'
-#' @param dateAsText Date as a text string
+#' @param dateAsText Date represented as a text string
 #' @return Character representing a date as day-of-the-year (YYYYDOY)
 #' @export
 date2ydoy <- function(dateAsText){
@@ -58,21 +58,6 @@ isLeapYear <- function(year){
 #' @export
 ydoy2date <- function(YYYYDOY){
   return(.ydoy2date(YYYYDOY = YYYYDOY))
-}
-
-
-
-#' @title date to year-day_of_the_year
-#' @name date2ydoy
-#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
-#'
-#' @description Transform a date into the year-day_of_the_year date (YYYYDOY)
-#'
-#' @param dateAsText Date as a text string
-#' @return Character representing a date as day-of-the-year (YYYYDOY)
-#' @export
-date2ydoy <- function(dateAsText){
-  return(.date2ydoy(dateAsText = dateAsText))
 }
 
 
@@ -150,7 +135,7 @@ time_id2date <- function(time_id.vector, period){
 #' @description Transform a time_id into year-day_of_the_year
 #'
 #' @param time_id A time id
-#' @param freqperyear Number of time_ids a year
+#' @param period days between images (MOD09Q1 is 8, MOD13Q1 is 16)
 #' @return A number
 #' @export
 time_id2ydoy <- function(time_id, period){
@@ -248,6 +233,8 @@ calcPixelSize <- function(resolution, tileWidth){
 #'
 #' @param col_id Array's col ID
 #' @param row_id Array's row ID
+#' @param nrows Number of rows in a MODIS image (i.e for MOD09Q1 is 4800)
+#' @param ncols Number of rows in a MODIS image (i.e for MOD09Q1 is 4800)
 #' @return A list with 2 numeric values
 #' @export
 ids2tile <- function(col_id, row_id, nrows, ncols){

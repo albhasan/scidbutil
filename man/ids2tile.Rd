@@ -10,6 +10,10 @@ ids2tile(col_id, row_id, nrows, ncols)
 \item{col_id}{Array's col ID}
 
 \item{row_id}{Array's row ID}
+
+\item{nrows}{Number of rows in a MODIS image (i.e for MOD09Q1 is 4800)}
+
+\item{ncols}{Number of rows in a MODIS image (i.e for MOD09Q1 is 4800)}
 }
 \value{
 A list with 2 numeric values
