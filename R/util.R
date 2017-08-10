@@ -331,7 +331,7 @@
 #
 # @param tid A vector of time ids
 # @return A vecor with the missing time ids between the maximum and minimum time id provided
-missingtids <- function(tid){
+.missingtids <- function(tid){
   test <- min(tid):max(tid)
   return(setdiff(test, tid))
 }
@@ -395,15 +395,6 @@ missingtids <- function(tid){
 }
 
 
-# Get the MODIS tile id from the modis filename
-#
-# @param fileName Name of the file
-# @return The name of the file
-.getTileIdFromFilename <- function(fileName){
-  tmp <- unlist(strsplit(fileName, split = "[.]"))
-  res <- tmp[3]
-  return(res)
-}
 
 
 
@@ -417,7 +408,7 @@ missingtids <- function(tid){
 #
 # @param sdbdf A data frame made of MODIS data. The ID columns must be named as "col_id", "row_id", and "time_id"
 # @return A data frame with additional columns
-addPosition <- function(sdbdf, period, startyear){
+.addPosition <- function(sdbdf, period, startyear){
   #sinus = sp::CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
   pixelSize <- .calcPixelSize(4800, .calcTileWidth())
   # get unique positions from the data
@@ -447,7 +438,7 @@ addPosition <- function(sdbdf, period, startyear){
 # @param Date1 A list made of Date objects
 # @param numberOfYears An integer number representing a of years
 # @return Date1
-moveDateByYears <- function(Date1, numberOfYears){
+.moveDateByYears <- function(Date1, numberOfYears){
   for(i in 1:length(Date1)){
     originY <- as.numeric(format(Date1[i], format = "%Y"))
     originM <- format(Date1[i], format = "%m")
@@ -464,7 +455,7 @@ moveDateByYears <- function(Date1, numberOfYears){
 # @param  ts.df data.frame with 2 columns: time and value
 # @param  sampletime ????????????????????????????
 # @return a vector of sampled values
-sampleTS <- function(ts.df, sampletime){
+.sampleTS <- function(ts.df, sampletime){
   # ts.df data.frame with 2 columns: time and value
   #t <-c(1,3,6, 9,20)
   #v <-c(100,103,104,108,109)
@@ -500,18 +491,7 @@ sampleTS <- function(ts.df, sampletime){
 }
 
 
-# Get the data used by Christopher Stephan on his thesis "Automating Near Real-Time Deforestation Monitoring With Satellite Image Time Series"
-#
-getCSBFastData <- function(){
-  scidb::scidbconnect(host = "localhost")
-  #BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400); --    191 100 cells
-  #BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400); -- 22 604 400 cells
-  siteA <- scidb::iquery("BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
-  save(siteA, file = "siteA.Rbin")
-  rm(siteA)
-  siteB <- scidb::iquery("BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
-  save(siteB, file = "siteB.Rbin")
-}
+
 
 
 # Parse an array schema
@@ -585,3 +565,21 @@ getCSBFastData <- function(){
 }
 
 
+
+
+
+
+# ---- PRIVATE ----
+
+# Get the data used by Christopher Stephan on his thesis "Automating Near Real-Time Deforestation Monitoring With Satellite Image Time Series"
+#
+.getCSBFastData <- function(){
+  scidb::scidbconnect(host = "localhost")
+  #BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400); --    191 100 cells
+  #BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400); -- 22 604 400 cells
+  siteA <- scidb::iquery("BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
+  save(siteA, file = "siteA.Rbin")
+  rm(siteA)
+  siteB <- scidb::iquery("BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
+  save(siteB, file = "siteB.Rbin")
+}
