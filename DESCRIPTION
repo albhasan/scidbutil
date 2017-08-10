@@ -1,0 +1,19 @@
+Package: scidbutil
+Type: Package
+Title: R util functions for SciDB array database to handle imagery
+Version: 0.1.1
+Author: Alber Sanchez
+Maintainer: Alber Sanchez <alber.ipia@inpe.br>
+Description: More about what it does (maybe more than one line)
+    Use four spaces when indenting paragraphs within the Description.
+License: MIT License + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 3.0.0)
+Imports:
+    scidb,
+    sp
+Suggests:
+    testthat 
+RoxygenNote: 6.0.1

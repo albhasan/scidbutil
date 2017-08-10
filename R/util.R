@@ -1,11 +1,4 @@
-###########################################################
-# SCIDB UTIL
-###########################################################
-
-
-#-------------------------------------------------------
-# TIME FUNCTIONS
-#-------------------------------------------------------
+#---- TIME FUNCTIONS ----
 
 
 # Transforms a date given as text to a date object
@@ -127,7 +120,7 @@
 #
 # @param dateDOY Input day in year and day-of-the-year format (e.g 2001032 is Febraury the 2nd of 2001)
 # @param period Number of days between observations (e.g 8)
-# @param startyear Initial year of the index (e.g 2000) 
+# @param startyear Initial year of the index (e.g 2000)
 # @return A number
 .date2grid <- function(dateDOY, period, startyear){
   res = -1
@@ -147,14 +140,14 @@
 #
 # @param time_id Input time index
 # @param period Number of days between observations (e.g 8)
-# @param startyear Initial year of the index (e.g 2000) 
+# @param startyear Initial year of the index (e.g 2000)
 # @return A number vector  representing a date in the format year and day-of-the-year format (e.g 2001032 is Febraury the 2nd of 2001)
 .grid2date <- function(time_id, period, startyear){
   res <- vector(mode = "numeric", length = length(time_id))
   ppy = trunc((365 / period)) + 1 # Periods per year
   ys <- (trunc(time_id / ppy) + as.numeric(startyear)) * 1000
   mod <- time_id %% ppy
-  res = ys + (mod * period + 1)  
+  res = ys + (mod * period + 1)
   return(res)
 }
 
@@ -181,7 +174,7 @@
 
 # Transform a time_id into dates
 #
-# @param time_id.vector Vector of time indexes 
+# @param time_id.vector Vector of time indexes
 # @param period days between images (MOD09Q1 is 8, MOD13Q1 is 16)
 # @return a list of Date objects
 .time_id2date <- function(time_id.vector, period){
@@ -208,16 +201,7 @@
   YYYY * 1000 + DOY + 1
 }
 
-
-
-
-
-
-
-#-------------------------------------------------------
-# SPACE FUNCTIONS
-#-------------------------------------------------------
-
+#---- SPACE FUNCTIONS ----
 
 # Get the tileH and tileV from a MODIS tile Id
 #
@@ -228,7 +212,7 @@
   tV <- substr(modisTileId, 5, 6)
   res <- c(tH, tV)
   return(res)
-} 
+}
 
 
 # Get the adquisition time of a MODIS HDF file name
@@ -280,12 +264,10 @@
 # @param tileWidth Width of a tile
 # @return A number
 .calcPixelSize <- function(resolution, tileWidth){
-  
   #https://code.env.duke.edu/projects/mget/wiki/SinusoidalMODIS
   #earth.radius <- 6371007.181 # MODIS synusoidal parameter - SPHERICAL EARTH!
   #tile.rows <- resolution#4800
   #tile.cols <- tile.rows
-  #---------------------
   cell.size <- tileWidth / resolution
 }
 
@@ -349,7 +331,7 @@
 #
 # @param tid A vector of time ids
 # @return A vecor with the missing time ids between the maximum and minimum time id provided
-missingtids <- function(tid){
+.missingtids <- function(tid){
   test <- min(tid):max(tid)
   return(setdiff(test, tid))
 }
@@ -364,9 +346,9 @@ missingtids <- function(tid){
 .wgs84gmpi <- function(lonlat.Matrix, pixelSize){
   proj4326 <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
   proj_modis_sinusoidal <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
-  S <- SpatialPoints(lonlat.Matrix)
-  proj4string(S) <-CRS(proj4326)
-  llmat <- spTransform(S, CRS(proj_modis_sinusoidal))
+  S <- sp::SpatialPoints(lonlat.Matrix)
+  sp::proj4string(S) <- sp::CRS(proj4326)
+  llmat <- sp::spTransform(S, sp::CRS(proj_modis_sinusoidal))
   res <- .sinusoidal2gmpi(llmat@coords, pixelSize)
   rownames(res) <- NULL
   colnames(res) <- c('col_id', 'row_id')
@@ -375,9 +357,7 @@ missingtids <- function(tid){
 
 
 
-#-------------------------------------------------------
-# FILE NAME PROCESSING
-#-------------------------------------------------------
+#---- FILE NAME PROCESSING ----
 
 
 # Return the filename of the path to the file
@@ -415,31 +395,21 @@ missingtids <- function(tid){
 }
 
 
-# Get the MODIS tile id from the modis filename
-#
-# @param fileName Name of the file
-# @return The name of the file
-.getTileIdFromFilename <- function(fileName){
-  tmp <- unlist(strsplit(fileName, split = "[.]"))
-  res <- tmp[3]
-  return(res)
-}
 
 
 
 
 
-#-------------------------------------------------------
-# OTHER
-#-------------------------------------------------------
+#---- OTHER ----
+
 
 
 # Add position columns to MODIS data retrieved from a SciDB's 3D array
 #
 # @param sdbdf A data frame made of MODIS data. The ID columns must be named as "col_id", "row_id", and "time_id"
 # @return A data frame with additional columns
-addPosition <- function(sdbdf, period, startyear){
-  #sinus = CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
+.addPosition <- function(sdbdf, period, startyear){
+  #sinus = sp::CRS("+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs")
   pixelSize <- .calcPixelSize(4800, .calcTileWidth())
   # get unique positions from the data
   cr.id <- unique(sdbdf[c("col_id", "row_id")])
@@ -468,9 +438,9 @@ addPosition <- function(sdbdf, period, startyear){
 # @param Date1 A list made of Date objects
 # @param numberOfYears An integer number representing a of years
 # @return Date1
-moveDateByYears <- function(Date1, numberOfYears){
+.moveDateByYears <- function(Date1, numberOfYears){
   for(i in 1:length(Date1)){
-    originY <- as.numeric(format(Date1[i], format = "%Y")) 
+    originY <- as.numeric(format(Date1[i], format = "%Y"))
     originM <- format(Date1[i], format = "%m")
     originD <- format(Date1[i], format = "%d")
     newYear <- originY + numberOfYears
@@ -485,14 +455,14 @@ moveDateByYears <- function(Date1, numberOfYears){
 # @param  ts.df data.frame with 2 columns: time and value
 # @param  sampletime ????????????????????????????
 # @return a vector of sampled values
-sampleTS <- function(ts.df, sampletime){
+.sampleTS <- function(ts.df, sampletime){
   # ts.df data.frame with 2 columns: time and value
   #t <-c(1,3,6, 9,20)
   #v <-c(100,103,104,108,109)
   #ts.df <- as.data.frame(cbind(t, v))
   #sampletime <- c(6,8,10,12,14,16,18,20,22,24)
   #sampletime <- 8:25
-  #---------------
+  #
   #ts.df <- tsdf[, c("sampleDate", "evi")]
   #sampletime <- as.numeric(tsdf$tileDate)
 
@@ -507,12 +477,12 @@ sampleTS <- function(ts.df, sampletime){
       if(sampletime[stid] > r0[1] && sampletime[stid] <= r1[1]){
         x <- as.numeric(c(r0[1], r1[1])) # time
         y <- as.numeric(c(r0[2], r1[2])) # value
-        m <- lm(y~x)      
-        val[stid] <- predict.lm(m, newdata = data.frame(x = sampletime[stid]))
+        m <- stats::lm(y~x)
+        val[stid] <- stats::predict.lm(m, newdata = data.frame(x = sampletime[stid]))
       }else if(sampletime[stid] == r0[1]){
         val[stid] <- r0[2]
       }
-    }  
+    }
   }
   #plot(x = t, y = v, type = "l")
   #points(x = t, y = v)
@@ -521,19 +491,7 @@ sampleTS <- function(ts.df, sampletime){
 }
 
 
-# Get the data used by Christopher Stephan on his thesis "Automating Near Real-Time Deforestation Monitoring With Satellite Image Time Series"
-#
-getCSBFastData <- function(){
-  library(scidb)
-  scidbconnect(host = "localhost")
-  #BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400); --    191 100 cells
-  #BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400); -- 22 604 400 cells
-  siteA <- iquery("BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
-  save(siteA, file = "siteA.Rbin")
-  rm(siteA)
-  siteB <- iquery("BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
-  save(siteB, file = "siteB.Rbin")
-}
+
 
 
 # Parse an array schema
@@ -582,7 +540,7 @@ getCSBFastData <- function(){
       dmchunk  <- c(dmchunk, as.numeric(dimdef[i]))
     }
   }
-  att.df <- data.frame(name = atname, type = attype, nullable = atnull)  
+  att.df <- data.frame(name = atname, type = attype, nullable = atnull)
   dim.df <- data.frame(name = dmname, start = dmstart, end = dmend, chunk = dmchunk, overlap = dmover, stringsAsFactors = FALSE)
   list(arrayName = arrayname, dimensions = dim.df, attributes = att.df)
 }
@@ -607,3 +565,21 @@ getCSBFastData <- function(){
 }
 
 
+
+
+
+
+# ---- PRIVATE ----
+
+# Get the data used by Christopher Stephan on his thesis "Automating Near Real-Time Deforestation Monitoring With Satellite Image Time Series"
+#
+.getCSBFastData <- function(){
+  scidb::scidbconnect(host = "localhost")
+  #BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400); --    191 100 cells
+  #BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400); -- 22 604 400 cells
+  siteA <- scidb::iquery("BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
+  save(siteA, file = "siteA.Rbin")
+  rm(siteA)
+  siteB <- scidb::iquery("BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
+  save(siteB, file = "siteB.Rbin")
+}
