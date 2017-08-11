@@ -1,3 +1,30 @@
+#---- SCIDB FUNCTIONS ----
+
+
+
+# Get data over a SciDB connection of a data.frame of sample points
+#
+# @param samples.df A data.frame of samples. It must have 2 columns with the WGS84 longitude and latitude of the sample
+# @param lonlat     A character vector. The names of the columns in samples.df that contain the  WGS84 longitude and latitude
+# @param con        A SciDB connection object
+# @param arrayname  A string. The name of the array
+# @param pixelSize  A number. The length of one side of a pixel
+# @return           A list of lists. Each inner list has 2 elements: A row of samples.df and the results of the SciDB query for the longitude and latitude
+.getSdbDataFromPoints <- function(samples.df, lonlat, con, arrayname, pixelSize){
+  crid <- scidbutil::wgs84gmpi(as.matrix(samples.df[lonlat]), pixelSize)
+  samples.df["col_id"] <- crid[, 1]
+  samples.df["row_id"] <- crid[, 2]
+  res <- list()
+  for(i in 1:nrow(crid)){
+    cr <- crid[i, ]
+    afl <- paste("between(", paste(arrayname, cr[1], cr[2], 0, cr[1], cr[2], 500, sep =',' ), ")", sep = "")
+    res[[i]] <- list(sample = samples.df[i, ], time_series = scidb::iquery(con, afl, return = TRUE, binary = FALSE))
+  }
+  return(res)
+}
+
+
+
 #---- TIME FUNCTIONS ----
 
 
