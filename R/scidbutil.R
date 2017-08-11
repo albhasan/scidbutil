@@ -1,3 +1,26 @@
+#---- SCIDB FUNCTIONS ----
+
+
+
+#' @title Get SciDB data from sample points
+#' @name getSdbDataFromPoints
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Get data over a SciDB connection of a data.frame of sample points
+#'
+#' @param samples.df A data.frame of samples. It must have 2 columns with the WGS84 longitude and latitude of the sample
+#' @param lonlat     A character vector. The names of the columns in samples.df that contain the  WGS84 longitude and latitude
+#' @param con        A SciDB connection object
+#' @param arrayname  A string. The name of the array
+#' @param pixelSize  A number. The length of one side of a pixel
+#' @return           A list of lists. Each inner list has 2 elements: A row of samples.df and the results of the SciDB query for the longitude and latitude
+#' @export
+getSdbDataFromPoints <- function(samples.df, lonlat, con, arrayname, pixelSize){
+  return(.getSdbDataFromPoints(samples.df = samples.df, lonlat = lonlat, con = con, arrayname = arrayname, pixelSize = pixelSize))
+}
+
+
+
 #---- TIME FUNCTIONS ----
 
 
