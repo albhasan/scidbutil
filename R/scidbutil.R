@@ -339,7 +339,7 @@ ids2tile <- function(col_id, row_id, nrows, ncols){
 #' @description Report the missing time_ids
 #'
 #' @param tid A vector of time ids
-#' @return A vecor with the missing time ids between the maximum and minimum time id provided
+#' @return A vector with the missing time ids between the maximum and minimum time id provided
 #' @export
 missingtids <- function(tid){
   return(.missingtids(tid = tid))
