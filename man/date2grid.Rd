@@ -17,7 +17,7 @@ date2grid(dateDOY, period, startyear)
 A number
 }
 \description{
-Return a time index (timid) from the input date (MODIS DOY) and time period (e.g 8 days).
+DEPRECATED. Return a time index (timid) from the input date (MODIS DOY) and time period (e.g 8 days).
 }
 \author{
 Alber Sanchez, \email{alber.ipia@inpe.br}

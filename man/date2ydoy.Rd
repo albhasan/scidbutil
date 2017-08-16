@@ -13,7 +13,7 @@ date2ydoy(dateAsText)
 Character representing a date as day-of-the-year (YYYYDOY)
 }
 \description{
-Transforms a date into the year-day_of_the_year date (YYYYDOY).
+DEPRECATED. Transforms a date into the year-day_of_the_year date (YYYYDOY).
 }
 \author{
 Alber Sanchez, \email{alber.ipia@inpe.br}

@@ -13,7 +13,7 @@ isLeapYear(year)
 TRUE is the year is leap, FALSE otherwise
 }
 \description{
-Is the given year is a leap year?
+DEPRECATED. Is the given year is a leap year?
 }
 \author{
 Alber Sanchez, \email{alber.ipia@inpe.br}

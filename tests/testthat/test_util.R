@@ -37,8 +37,6 @@ testthat::expect_equal(as.vector(tid), expected = 23)
 
 
 
-
-
 dvec <- .ymd2ymd(ymd = 20000101)
 testthat::expect_equal(as.vector(dvec), expected = c(2000, 1, 1))
 
@@ -52,9 +50,22 @@ testthat::expect_equal(as.vector(dvec), expected = c(2000, 02, 31))
 
 
 
-
 yyyymmdd <- .ydoy2ymd(yyyydoy = 2000001)
 testthat::expect_equal(as.vector(yyyymmdd), expected = c(20000101))
 
 yyyymmdd <- .ydoy2ymd(yyyydoy = 2001001)
 testthat::expect_equal(as.vector(yyyymmdd), expected = c(20010101))
+
+
+
+
+
+arrayname <-  "MOD13Q1"
+bb.mat <- matrix(c(1,11,111,2,22,222), nrow = 2, byrow = T)
+res <- .sdb_between(arrayname = arrayname, bb.mat = bb.mat)
+testthat::expect_equal(res, "between(MOD13Q1,1,11,111,2,22,222)")
+
+
+
+
+

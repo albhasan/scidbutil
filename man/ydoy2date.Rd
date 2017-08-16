@@ -13,7 +13,7 @@ ydoy2date(YYYYDOY)
 A date object
 }
 \description{
-Transform a date in the year-day_of_the_year format to a date
+DEPRECATED. Transform a date in the year-day_of_the_year format to a date
 }
 \author{
 Alber Sanchez, \email{alber.ipia@inpe.br}
