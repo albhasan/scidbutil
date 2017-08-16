@@ -129,11 +129,11 @@
   # cast YYYYDDMMs to numbers
   ymd.dvec <- .ymd2ymd(ymd)
   origin.dvec <- .ymd2ymd(origin)
-  dtymd <- as.Date(paste(ymd.dvec['year'], ymd.dvec['month'], ymd.dvec['day'], sep = "/"))
-  dtor <- as.Date(paste(origin.dvec['year'], origin.dvec['month'], origin.dvec['day'], sep = "/"))
+  dtymd <- as.Date(paste(ymd.dvec['year'], ymd.dvec['month'], ymd.dvec['day'], sep = "/"), origin = "1970-01-01")
+  dtor <- as.Date(paste(origin.dvec['year'], origin.dvec['month'], origin.dvec['day'], sep = "/"), origin = "1970-01-01")
   if(yearly){
     dy <- round(365/period)                                                     # periods per year
-    dtor <- as.Date(paste(ymd.dvec['year'], 1, 1, sep = "/"))
+    dtor <- as.Date(paste(ymd.dvec['year'], 1, 1, sep = "/"), origin = "1970-01-01")
   }
   ndays <- as.integer(difftime(time1 = dtymd, time2 = dtor, units = "days"))    # days from origin to ymd
   if(ndays %% period == 0){
@@ -205,7 +205,7 @@
   d <- .text2date(dateAsText)
   yearOriginText <- paste(format(d, "%Y"), "/01/01", sep="")
   yearOrigin <- as.POSIXlt(yearOriginText)
-  doy <- as.numeric(as.Date(d) - as.Date(yearOrigin)) + 1
+  doy <- as.numeric(as.Date(d, origin = "1970-01-01") - as.Date(yearOrigin, origin = "1970-01-01")) + 1
   res <- paste(format(d, "%Y"), sprintf("%03d", doy), sep="")
   return(res)
 }
@@ -251,7 +251,7 @@
     originM <- format(Date1[i], format = "%m")
     originD <- format(Date1[i], format = "%d")
     newYear <- originY + numberOfYears
-    Date1[i] <- as.Date(paste(newYear, originM, originD, sep = "-"))
+    Date1[i] <- as.Date(paste(newYear, originM, originD, sep = "-"), origin = "1970-01-01")
   }
   return(Date1)
 }
@@ -396,7 +396,7 @@
     stop("Invalid day-of-the-year interval")
   }
   charDates <- sapply(1:length(YYYYDOY), .ydoy2dateHelper, year.vec = year.vec, doy.vec = doy.vec)
-  return (as.Date(charDates))
+  return (as.Date(charDates, origin = "1970-01-01"))
 }
 .ydoy2dateHelper <- function(i, year.vec, doy.vec){
   ymd <- .ydoy2dateHelper2(year = year.vec[i], doy = doy.vec[i])
