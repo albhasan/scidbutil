@@ -15,7 +15,7 @@ time_id2date(time_id.vector, period)
 a list of Date objects
 }
 \description{
-Transform a time_id into dates
+DEPRECATED. Transform a time_id into dates
 }
 \author{
 Alber Sanchez, \email{alber.ipia@inpe.br}

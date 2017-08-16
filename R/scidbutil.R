@@ -2,6 +2,33 @@
 
 
 
+#' @title Get data over a SciDB connection of a bounding box
+#' @name getSdbDataFromBB
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Get data over a SciDB connection of a bounding box
+#'
+#' @param con                A SciDB connection object
+#' @param arrayname          A string. The name of the array
+#' @param pixelSize          A number. The length of one side of a pixel
+#' @param lonlat.mat         A 2x2 matrix. The 2 columns are the WGS84 longitude, and WGS84 latitude
+#' @param start              An integer. The start date as YYYYMMDD
+#' @param end                An integer. The end date as YYYYMMDD
+#' @param origin             An integer. A YYYYMMDD date. The day when the time_id == 0
+#' @param period             An integer. The number of days between observations
+#' @param yearly             A logical Do the dates yearly match January the 1st?
+#' @return                   A data frame
+#' @export
+getSdbDataFromBB <- function(con, arrayname, pixelSize, lonlat.mat, start, end,
+                             origin,period, yearly){
+  return(.getSdbDataFromBB(con = con, arrayname = arrayname,
+                           pixelSize = pixelSize, lonlat.mat = lonlat.mat,
+                           start = start, end = end, origin = origin,
+                           period = period, yearly = yearly))
+}
+
+
+
 #' @title Get SciDB data from sample points
 #' @name getSdbDataFromPoints
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
@@ -25,11 +52,48 @@ getSdbDataFromPoints <- function(samples.df, lonlat, con, arrayname, pixelSize){
 
 
 
+#' @title Transform a date into a time_id index
+#' @name ymd2tid
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Transform a date into a time_id index
+#'
+#' @param ymd    An int. A YYYYMMDD date
+#' @param origin An int. A YYYYMMDD date. The day when the time_id == 0
+#' @param period An int. The number of days between observations
+#' @param yearly A boolean. Do the dates yearly match January the 1st?
+#' @return       An integer. The time_id matching ymd or 0 is ymd doesn't match
+#' @export
+ymd2tid <- function(ymd, origin, period, yearly){
+  return(.ymd2tid(ymd = ymd, origin = origin, period = period, yearly = yearly))
+}
+
+
+
+#' @title Transform year-day-of-the-year into a date
+#' @name ydoy2ymd
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Transform year-day-of-the-year into a date
+#'
+#' @param yyyydoy    An int YYYYDOY
+#' @return           An integer YYYYMMDD
+#' @export
+ydoy2ymd <- function(yyyydoy){
+  return(.ydoy2ymd(yyyydoy = yyyydoy))
+}
+
+
+
+#---- OLD TIME FUNCTIONS ----
+
+
+
 #' @title year-day-of-the-year to time_id
 #' @name date2grid
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Return a time index (timid) from the input date (MODIS DOY) and time period (e.g 8 days).
+#' @description DEPRECATED. Return a time index (timid) from the input date (MODIS DOY) and time period (e.g 8 days).
 #'
 #' @param dateDOY Input day in year and day-of-the-year format (e.g 2001032 is Febraury the 2nd of 2001)
 #' @param period Number of days between observations (e.g 8)
@@ -46,7 +110,7 @@ date2grid <- function(dateDOY, period, startyear){
 #' @name date2ydoy
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Transforms a date into the year-day_of_the_year date (YYYYDOY).
+#' @description DEPRECATED. Transforms a date into the year-day_of_the_year date (YYYYDOY).
 #'
 #' @param dateAsText Date represented as a text string
 #' @return Character representing a date as day-of-the-year (YYYYDOY)
@@ -62,9 +126,8 @@ date2ydoy <- function(dateAsText){
 #' @name grid2date
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Return a year and day-of-the-year from the given time_id.
+#' @description DEPRECATED. Return a year and day-of-the-year from the given time_id.
 #'
-#' @param time_id Input time index
 #' @param time_id Input time index
 #' @param period Number of days between observations (e.g 8)
 #' @param startyear Initial year of the index (e.g 2000)
@@ -80,7 +143,7 @@ grid2date <- function(time_id, period, startyear){
 #' @name isLeapYear
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Is the given year is a leap year?
+#' @description DEPRECATED. Is the given year is a leap year?
 #'
 #' @param year Numeric year
 #' @return TRUE is the year is leap, FALSE otherwise
@@ -157,7 +220,7 @@ text2date <- function(dateAsText){
 #' @name time_id2date
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Transform a time_id into dates
+#' @description DEPRECATED. Transform a time_id into dates
 #'
 #' @param time_id.vector Vector of time indexes
 #' @param period days between images (MOD09Q1 is 8, MOD13Q1 is 16)
@@ -173,7 +236,7 @@ time_id2date <- function(time_id.vector, period){
 #' @name time_id2ydoy
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Transform a time_id into year-day_of_the_year
+#' @description DEPRECATED. Transform a time_id into year-day_of_the_year
 #'
 #' @param time_id A time id
 #' @param period days between images (MOD09Q1 is 8, MOD13Q1 is 16)
@@ -189,7 +252,7 @@ time_id2ydoy <- function(time_id, period){
 #' @name ydoy2date
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Transform a date in the year-day_of_the_year format to a date
+#' @description DEPRECATED. Transform a date in the year-day_of_the_year format to a date
 #'
 #' @param YYYYDOY Numeric or character with 4 digits for the year and 3 for the day of the year (i.e 2012324)
 #' @return A date object
@@ -339,7 +402,7 @@ ids2tile <- function(col_id, row_id, nrows, ncols){
 #' @description Report the missing time_ids
 #'
 #' @param tid A vector of time ids
-#' @return A vecor with the missing time ids between the maximum and minimum time id provided
+#' @return A vector with the missing time ids between the maximum and minimum time id provided
 #' @export
 missingtids <- function(tid){
   return(.missingtids(tid = tid))
@@ -353,12 +416,12 @@ missingtids <- function(tid){
 #'
 #' @description Calculate the col_id & row_id corresponding to the given MODIS sinusoidal coordinates
 #'
-#' @param lonlat.Matrix A numeric matrix with 2 columns: lon and lat on MODIS sinusoidal coordinates
+#' @param lonlat.mat A numeric matrix with 2 columns: lon and lat on MODIS sinusoidal coordinates
 #' @param pixelSize Pixel size in meters
 #' @return A 2-column matrix (col_id and row_id)
 #' @export
-sinusoidal2gmpi <- function(lonlat.Matrix, pixelSize){
-  return(.sinusoidal2gmpi(lonlat.Matrix = lonlat.Matrix, pixelSize = pixelSize))
+sinusoidal2gmpi <- function(lonlat.mat, pixelSize){
+  return(.sinusoidal2gmpi(lonlat.mat = lonlat.mat, pixelSize = pixelSize))
 }
 
 
@@ -369,12 +432,12 @@ sinusoidal2gmpi <- function(lonlat.Matrix, pixelSize){
 #'
 #' @description Calculate the col_id & row_id corresponding to the given WGS84 coordinates
 #'
-#' @param lonlat.Matrix A numeric matrix with 2 columns: lon and lat on WGS84
+#' @param lonlat.mat A numeric matrix with 2 columns: lon and lat on WGS84
 #' @param pixelSize Pixel size in meters
 #' @return A 2-column matrix (col_id and row_id)
 #' @export
-wgs84gmpi <- function(lonlat.Matrix, pixelSize){
-  return(.wgs84gmpi(lonlat.Matrix = lonlat.Matrix, pixelSize = pixelSize))
+wgs84gmpi <- function(lonlat.mat, pixelSize){
+  return(.wgs84gmpi(lonlat.mat = lonlat.mat, pixelSize = pixelSize))
 }
 
 

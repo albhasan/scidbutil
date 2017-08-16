@@ -2,6 +2,50 @@
 
 
 
+# Get data over a SciDB connection of a bounding box
+#
+# @param con                A SciDB connection object
+# @param arrayname          A string. The name of the array
+# @param pixelSize          A number. The length of one side of a pixel
+# @param lonlat.mat         A 2x2 matrix. The 2 columns are the WGS84 longitude, and WGS84 latitude
+# @param start              An integer. The start date as YYYYMMDD
+# @param end                An integer. The end date as YYYYMMDD
+# @param origin             An integer. A YYYYMMDD date. The day when the time_id == 0
+# @param period             An integer. The number of days between observations
+# @param yearly             A logical Do the dates yearly match January the 1st?
+# @return                   A data frame
+.getSdbDataFromBB <- function(con, arrayname, pixelSize, lonlat.mat, start, end,
+                              origin, period, yearly){
+  # transform to SciDB dimension indexes
+  stid <- .ymd2tid(ymd = start, origin = origin, period = period, yearly = yearly)
+  etid <- .ymd2tid(ymd = end, origin = origin, period = period, yearly = yearly)
+  lonlat.mat <- .wgs84gmpi(lonlat.mat = lonlat.mat, pixelSize = pixelSize)
+  # build the bounding box matrix
+  bb.mat <- cbind(lonlat.mat, c(stid, etid))
+  rownames(bb.mat) <- NULL
+  colnames(bb.mat) <- c(colnames(lonlat.mat), "time_id")
+  bb.mat[, 1] <- sort(bb.mat[, 1])
+  bb.mat[, 2] <- sort(bb.mat[, 2])
+  bb.mat[, 3] <- sort(bb.mat[, 3])
+  # run the AFl query
+  afl <- .sdb_between(arrayname = arrayname, bb.mat = bb.mat)
+  return(scidb::iquery(db = con, query = afl, return = TRUE, binary = FALSE))
+}
+
+
+
+# Build a SciDB between query
+#
+# @param arrayname  A string. The name of the array
+# @param bb.mat     A 2xd matrix. The bounding box. The rows are the minimum and maximum dimension ids. d is the number of dimensions
+.sdb_between <- function(arrayname, bb.mat){
+  ind <- paste(paste(bb.mat[1,], collapse = ","), paste(bb.mat[2,], collapse = ","), sep = ",")
+  return(paste("between(", arrayname, ",", ind, ")", sep = ""))
+}
+
+
+
+
 # Get data over a SciDB connection of a data.frame of sample points
 #
 # @param samples.df A data.frame of samples. It must have 2 columns with the WGS84 longitude and latitude of the sample
@@ -24,8 +68,111 @@
 }
 
 
-
 #---- TIME FUNCTIONS ----
+
+
+
+# Is the given year a leap year?
+#
+# @param year An int. The year
+# @return     A logical
+.isLeapYearHelper <- function(year){
+  leapyear <- FALSE
+  if (year %% 4 != 0){
+    leapyear <- FALSE
+  }else if (year %% 100 != 0){
+    leapyear <- TRUE
+  }else if (year %% 400 == 0){
+    leapyear <- TRUE
+  }
+  return(leapyear)
+}
+
+
+# Transform a year and day-of-the-year to a integer vector
+#
+# @param year   An int. A year
+# @param doy    An int. A day of the year (January the 1st is doy 1)
+# @return       An int vector. The year, the month and the day
+.ydoy2dateHelper2 <- function(year, doy){
+  firstdayRegular <- c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366)
+  firstdayLeap    <- c(1, 32, 61, 92, 122, 153, 183, 214, 245, 275, 306, 336, 367)
+  if(.isLeapYearHelper(year)){
+    firstday <- firstdayLeap
+  }else{
+    firstday <- firstdayRegular
+  }
+  for (i in 1:(length(firstday) - 1)){
+    start <- firstday[i]
+    end <- firstday[i + 1]
+    if(doy >= start && doy < end){
+      month <- i
+      break
+    }
+  }
+  day <- doy - firstday[month] + 1
+  return(c(year = year, month = month, day = day)) # return(paste(year, month, day, sep = "/"))
+}
+
+
+
+# Transform a date into a time_id index
+#
+# @param ymd    An int. A YYYYMMDD date
+# @param origin An int. A YYYYMMDD date. The day when the time_id == 0
+# @param period An int. The number of days between observations
+# @param yearly A boolean. Do the dates yearly match January the 1st?
+# @return       An integer. The time_id matching ymd or 0 is ymd doesn't match
+.ymd2tid <- function(ymd, origin, period, yearly){
+  res = 0
+  dy = 0
+  # cast YYYYDDMMs to numbers
+  ymd.dvec <- .ymd2ymd(ymd)
+  origin.dvec <- .ymd2ymd(origin)
+  dtymd <- as.Date(paste(ymd.dvec['year'], ymd.dvec['month'], ymd.dvec['day'], sep = "/"))
+  dtor <- as.Date(paste(origin.dvec['year'], origin.dvec['month'], origin.dvec['day'], sep = "/"))
+  if(yearly){
+    dy <- round(365/period)                                                     # periods per year
+    dtor <- as.Date(paste(ymd.dvec['year'], 1, 1, sep = "/"))
+  }
+  ndays <- as.integer(difftime(time1 = dtymd, time2 = dtor, units = "days"))    # days from origin to ymd
+  if(ndays %% period == 0){
+    res <- ndays/period + (ymd.dvec['year'] - origin.dvec['year']) * dy
+    names(res) <- "time_id"
+  }
+  return(res)
+}
+
+
+# Split a YYYYMMDD date into its parts
+#
+# @param ymd    An int YYYYMMDD
+# @return       An int vector with the year, month, and day
+.ymd2ymd <- function(ymd){
+  y <- floor(ymd / 10000)
+  m <- floor((ymd - y * 10000)/100)
+  d <- (ymd - y * 10000 - m * 100)
+  return(c(year = y, month = m, day = d))
+}
+
+
+
+# Transform year-day-of-the-year into a date
+#
+# @param yyyydoy    An int YYYYDOY
+# @return           An integer YYYYMMDD
+.ydoy2ymd <- function(yyyydoy){
+  y <- floor(yyyydoy / 1000)
+  doy <- floor(yyyydoy - y * 1000)
+  ymd <- .ydoy2dateHelper2(year = y, doy = doy)
+  res <- ymd['year'] * 10000  + ymd['month'] * 100 + ymd['day']
+  names(res) <- NULL
+  return(res)
+}
+
+
+
+#---- OLD TIME FUNCTIONS ----
 
 
 
@@ -89,16 +236,6 @@
 .isLeapYear <- function(year){
   leapyear <- sapply(year, .isLeapYearHelper)
   return (leapyear)
-}
-.isLeapYearHelper <- function(year){
-  leapyear <- FALSE
-  if (year %% 4 != 0){
-    leapyear <- FALSE
-  }else if (year %% 100 != 0){
-    leapyear <- TRUE
-  }else if (year %% 400 == 0){
-    leapyear <- TRUE
-  }
 }
 
 
@@ -262,25 +399,8 @@
   return (as.Date(charDates))
 }
 .ydoy2dateHelper <- function(i, year.vec, doy.vec){
-  year <- year.vec[i]
-  doy <- doy.vec[i]
-  firstdayRegular <- c(1, 32, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366)
-  firstdayLeap    <- c(1, 32, 61, 92, 122, 153, 183, 214, 245, 275, 306, 336, 367)
-  if(.isLeapYear(year)){
-    firstday <- firstdayLeap
-  }else{
-    firstday <- firstdayRegular
-  }
-  for (i in 1:(length(firstday) - 1)){
-    start <- firstday[i]
-    end <- firstday[i + 1]
-    if(doy >= start && doy < end){
-      month <- i
-      break
-    }
-  }
-  day <- doy - firstday[month] + 1
-  return(paste(year, month, day, sep = "/"))
+  ymd <- .ydoy2dateHelper2(year = year.vec[i], doy = doy.vec[i])
+  return(paste(ymd['year'], ymd['month'], ymd['day'], sep = "/"))
 }
 
 
@@ -438,18 +558,18 @@
 
 # Calculate the col_id & row_id corresponding to the given MODIS sinusoidal coordinates
 #
-# @param lonlat.Matrix A numeric matrix with 2 columns: lon and lat on MODIS sinusoidal coordinates
+# @param lonlat.mat A numeric matrix with 2 columns: lon and lat on MODIS sinusoidal coordinates
 # @param pixelSize Pixel size in meters
 # @return A 2-column matrix (col_id and row_id)
-.sinusoidal2gmpi <- function(lonlat.Matrix, pixelSize){
-  col_id <- vector(mode = "numeric", length = length(nrow(lonlat.Matrix)))
-  row_id <- vector(mode = "numeric", length = length(nrow(lonlat.Matrix)))
+.sinusoidal2gmpi <- function(lonlat.mat, pixelSize){
+  col_id <- vector(mode = "numeric", length = length(nrow(lonlat.mat)))
+  row_id <- vector(mode = "numeric", length = length(nrow(lonlat.mat)))
   # Upper left corner of MODIS CRS
   corner.ul.x <- -20015109.354
   corner.ul.y <- 10007554.677
   # distance to origin
-  dx <- lonlat.Matrix[,1] - corner.ul.x
-  dy <- corner.ul.y - lonlat.Matrix[,2]
+  dx <- lonlat.mat[,1] - corner.ul.x
+  dy <- corner.ul.y - lonlat.mat[,2]
   # gmpi
   col_id <- trunc(dx %/% pixelSize - 1)
   row_id <- trunc(dy %/% pixelSize - 1)
@@ -460,13 +580,13 @@
 
 # Calculate the col_id & row_id corresponding to the given WGS84 coordinates
 #
-# @param lonlat.Matrix A numeric matrix with 2 columns: lon and lat on WGS84
+# @param lonlat.mat A numeric matrix with 2 columns: lon and lat on WGS84
 # @param pixelSize Pixel size in meters
 # @return A 2-column matrix (col_id and row_id)
-.wgs84gmpi <- function(lonlat.Matrix, pixelSize){
+.wgs84gmpi <- function(lonlat.mat, pixelSize){
   proj4326 <- "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"
   proj_modis_sinusoidal <- "+proj=sinu +lon_0=0 +x_0=0 +y_0=0 +a=6371007.181 +b=6371007.181 +units=m +no_defs"
-  S <- sp::SpatialPoints(lonlat.Matrix)
+  S <- sp::SpatialPoints(lonlat.mat)
   sp::proj4string(S) <- sp::CRS(proj4326)
   llmat <- sp::spTransform(S, sp::CRS(proj_modis_sinusoidal))
   res <- .sinusoidal2gmpi(llmat@coords, pixelSize)
@@ -604,14 +724,14 @@
 # Get the data used by Christopher Stephan on his thesis "Automating Near Real-Time Deforestation Monitoring With Satellite Image Time Series"
 #
 #.getCSBFastData <- function(){
-  #scidb::scidbconnect(host = "localhost")
-  ##BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400); --    191 100 cells
-  ##BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400); -- 22 604 400 cells
-  #siteA <- scidb::iquery("BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
-  #save(siteA, file = "siteA.Rbin")
-  #rm(siteA)
-  #siteB <- scidb::iquery("BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
-  #save(siteB, file = "siteB.Rbin")
+#scidb::scidbconnect(host = "localhost")
+##BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400); --    191 100 cells
+##BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400); -- 22 604 400 cells
+#siteA <- scidb::iquery("BETWEEN(MOD13Q1, 57084, 46857, 0, 57104, 46881, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
+#save(siteA, file = "siteA.Rbin")
+#rm(siteA)
+#siteB <- scidb::iquery("BETWEEN(MOD13Q1, 56995, 46840, 0, 57264, 47069, 400);", `return` = TRUE, afl = TRUE, iterative = FALSE, n = Inf)
+#save(siteB, file = "siteB.Rbin")
 #}
 
 

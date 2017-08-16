@@ -23,6 +23,7 @@ A common task while working with MODIS data is to transform coordinates from and
 
 
 ```{r}
+library(scidbutil)
 library(sp)
 
 # create the coordinate systems

@@ -12,14 +12,12 @@ grid2date(time_id, period, startyear)
 \item{period}{Number of days between observations (e.g 8)}
 
 \item{startyear}{Initial year of the index (e.g 2000)}
-
-\item{time_id}{Input time index}
 }
 \value{
 A number vector  representing a date in the format year and day-of-the-year format (e.g 2001032 is Febraury the 2nd of 2001)
 }
 \description{
-Return a year and day-of-the-year from the given time_id.
+DEPRECATED. Return a year and day-of-the-year from the given time_id.
 }
 \author{
 Alber Sanchez, \email{alber.ipia@inpe.br}

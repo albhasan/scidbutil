@@ -4,10 +4,10 @@
 \alias{sinusoidal2gmpi}
 \title{Get the col_id & row_id in MODIS sinusoidal coordinates}
 \usage{
-sinusoidal2gmpi(lonlat.Matrix, pixelSize)
+sinusoidal2gmpi(lonlat.mat, pixelSize)
 }
 \arguments{
-\item{lonlat.Matrix}{A numeric matrix with 2 columns: lon and lat on MODIS sinusoidal coordinates}
+\item{lonlat.mat}{A numeric matrix with 2 columns: lon and lat on MODIS sinusoidal coordinates}
 
 \item{pixelSize}{Pixel size in meters}
 }

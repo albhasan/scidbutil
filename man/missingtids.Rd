@@ -10,7 +10,7 @@ missingtids(tid)
 \item{tid}{A vector of time ids}
 }
 \value{
-A vecor with the missing time ids between the maximum and minimum time id provided
+A vector with the missing time ids between the maximum and minimum time id provided
 }
 \description{
 Report the missing time_ids

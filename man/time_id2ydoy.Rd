@@ -15,7 +15,7 @@ time_id2ydoy(time_id, period)
 A number
 }
 \description{
-Transform a time_id into year-day_of_the_year
+DEPRECATED. Transform a time_id into year-day_of_the_year
 }
 \author{
 Alber Sanchez, \email{alber.ipia@inpe.br}
