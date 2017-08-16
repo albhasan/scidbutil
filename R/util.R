@@ -13,7 +13,7 @@
 # @param origin             An integer. A YYYYMMDD date. The day when the time_id == 0
 # @param period             An integer. The number of days between observations
 # @param yearly             A logical Do the dates yearly match January the 1st?
-# @return
+# @return                   A data frame
 .getSdbDataFromBB <- function(con, arrayname, pixelSize, lonlat.mat, start, end,
                               origin, period, yearly){
   # transform to SciDB dimension indexes
