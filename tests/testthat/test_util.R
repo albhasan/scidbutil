@@ -69,3 +69,4 @@ testthat::expect_equal(res, "between(MOD13Q1,1,11,111,2,22,222)")
 
 
 
+.ymd2tid(ymd = 20010101, origin = 20000101, period = 16, yearly = TRUE)
