@@ -65,7 +65,6 @@ date2ydoy <- function(dateAsText){
 #' @description Return a year and day-of-the-year from the given time_id.
 #'
 #' @param time_id Input time index
-#' @param time_id Input time index
 #' @param period Number of days between observations (e.g 8)
 #' @param startyear Initial year of the index (e.g 2000)
 #' @return A number vector  representing a date in the format year and day-of-the-year format (e.g 2001032 is Febraury the 2nd of 2001)
@@ -353,12 +352,12 @@ missingtids <- function(tid){
 #'
 #' @description Calculate the col_id & row_id corresponding to the given MODIS sinusoidal coordinates
 #'
-#' @param lonlat.Matrix A numeric matrix with 2 columns: lon and lat on MODIS sinusoidal coordinates
+#' @param lonlat.mat A numeric matrix with 2 columns: lon and lat on MODIS sinusoidal coordinates
 #' @param pixelSize Pixel size in meters
 #' @return A 2-column matrix (col_id and row_id)
 #' @export
-sinusoidal2gmpi <- function(lonlat.Matrix, pixelSize){
-  return(.sinusoidal2gmpi(lonlat.Matrix = lonlat.Matrix, pixelSize = pixelSize))
+sinusoidal2gmpi <- function(lonlat.mat, pixelSize){
+  return(.sinusoidal2gmpi(lonlat.mat = lonlat.mat, pixelSize = pixelSize))
 }
 
 
@@ -369,12 +368,12 @@ sinusoidal2gmpi <- function(lonlat.Matrix, pixelSize){
 #'
 #' @description Calculate the col_id & row_id corresponding to the given WGS84 coordinates
 #'
-#' @param lonlat.Matrix A numeric matrix with 2 columns: lon and lat on WGS84
+#' @param lonlat.mat A numeric matrix with 2 columns: lon and lat on WGS84
 #' @param pixelSize Pixel size in meters
 #' @return A 2-column matrix (col_id and row_id)
 #' @export
-wgs84gmpi <- function(lonlat.Matrix, pixelSize){
-  return(.wgs84gmpi(lonlat.Matrix = lonlat.Matrix, pixelSize = pixelSize))
+wgs84gmpi <- function(lonlat.mat, pixelSize){
+  return(.wgs84gmpi(lonlat.mat = lonlat.mat, pixelSize = pixelSize))
 }
 
 

@@ -4,10 +4,10 @@
 \alias{wgs84gmpi}
 \title{Get the col_id & row_id in WGS84 coordinates}
 \usage{
-wgs84gmpi(lonlat.Matrix, pixelSize)
+wgs84gmpi(lonlat.mat, pixelSize)
 }
 \arguments{
-\item{lonlat.Matrix}{A numeric matrix with 2 columns: lon and lat on WGS84}
+\item{lonlat.mat}{A numeric matrix with 2 columns: lon and lat on WGS84}
 
 \item{pixelSize}{Pixel size in meters}
 }
