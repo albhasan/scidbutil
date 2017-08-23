@@ -13,7 +13,8 @@ Depends:
     R (>= 3.0.0)
 Imports:
     scidb,
-    sp
+    sp, 
+    rgdal
 Suggests:
     testthat ,
     knitr,
