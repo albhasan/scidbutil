@@ -116,7 +116,7 @@
 
 
 
-# Transform a date into a time_id index
+# Transform a date into an exactly time_id index
 #
 # @param ymd    An int. A YYYYMMDD date
 # @param origin An int. A YYYYMMDD date. The day when the time_id == 0
@@ -142,6 +142,37 @@
   }
   return(res)
 }
+
+
+
+# Transform a date into an time_id index
+#
+# @param ymd    An int. A YYYYMMDD date
+# @param origin An int. A YYYYMMDD date. The day when the time_id == 0
+# @param period An int. The number of days between observations
+# @param yearly A boolean. Do the dates yearly match January the 1st?
+# @return       An integer. The time_id matching ymd or 0 is ymd doesn't match
+.ymd2tid_approx <- function(ymd, origin, period, yearly){
+  res = 0
+  dy = 0
+  # cast YYYYDDMMs to numbers
+  ymd.dvec <- .ymd2ymd(ymd)
+  origin.dvec <- .ymd2ymd(origin)
+  dtymd <- as.Date(paste(ymd.dvec['year'], ymd.dvec['month'], ymd.dvec['day'], sep = "/"), origin = "1970-01-01")
+  dtor <- as.Date(paste(origin.dvec['year'], origin.dvec['month'], origin.dvec['day'], sep = "/"), origin = "1970-01-01")
+  if(yearly){
+    dy <- round(365/period)                                                     # periods per year
+    dtor <- as.Date(paste(ymd.dvec['year'], 1, 1, sep = "/"), origin = "1970-01-01")
+  }
+  ndays <- as.integer(difftime(time1 = dtymd, time2 = dtor, units = "days"))    # days from origin to ymd
+  #if(ndays %% period == 0){
+  res <- ndays/period + (ymd.dvec['year'] - origin.dvec['year']) * dy
+  names(res) <- "time_id"
+  #}
+  return(res)
+}
+
+
 
 
 # Split a YYYYMMDD date into its parts

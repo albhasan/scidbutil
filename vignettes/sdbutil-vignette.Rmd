@@ -68,7 +68,21 @@ The `scidbutil` package also provides functions to transform from and to time re
 
 
 ```{r}
+library(scidbutil)
 tid <- 0:2
 MOD13Q1.period <- 16 
 (date.vector <- time_id2date(time_id.vector = tid, period = MOD13Q1.period))
+```
+
+
+## Find missing time_ids
+
+```{r, eval=FALSE, include=FALSE}
+library(scidbutil)
+
+con <- scidb::scidbconnect()
+afl <- "between(mod13q1_512, 52800, 43200, 0, 52800, 43200, 500)"
+res <- scidb::iquery(db = con, query = afl, return = TRUE, binary = FALSE)
+time_id <- res$time_id
+(scidbutil::missingtids(tid = time_id))
 ```

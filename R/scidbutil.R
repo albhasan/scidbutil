@@ -52,20 +52,38 @@ getSdbDataFromPoints <- function(samples.df, lonlat, con, arrayname, pixelSize){
 
 
 
-#' @title Transform a date into a time_id index
+#' @title Transform a date into an exactly time_id index
 #' @name ymd2tid
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Transform a date into a time_id index
+#' @description Transform a date into an exactly time_id index
 #'
 #' @param ymd    An int. A YYYYMMDD date
 #' @param origin An int. A YYYYMMDD date. The day when the time_id == 0
 #' @param period An int. The number of days between observations
 #' @param yearly A boolean. Do the dates yearly match January the 1st?
-#' @return       An integer. The time_id matching ymd or 0 is ymd doesn't match
+#' @return       An integer. The time_id matching ymd or 0 (the first id) is ymd doesn't match
 #' @export
 ymd2tid <- function(ymd, origin, period, yearly){
   return(.ymd2tid(ymd = ymd, origin = origin, period = period, yearly = yearly))
+}
+
+
+
+#' @title Transform a date into an time_id index
+#' @name ymd2tid_approx
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Transform a date into an time_id index
+#'
+#' @param ymd    An int. A YYYYMMDD date
+#' @param origin An int. A YYYYMMDD date. The day when the time_id == 0
+#' @param period An int. The number of days between observations
+#' @param yearly A boolean. Do the dates yearly match January the 1st?
+#' @return       An integer. The time_id matching ymd or 0 (the first id) is ymd doesn't match
+#' @export
+ymd2tid_approx <- function(ymd, origin, period, yearly){
+  .ymd2tid_approx(ymd = ymd, origin = origin, period = period, yearly = yearly)
 }
 
 
