@@ -77,12 +77,25 @@ MOD13Q1.period <- 16
 
 ## Find missing time_ids
 
-```{r, eval=FALSE, include=FALSE}
+```{r, eval=FALSE, include=TRUE}
 library(scidbutil)
-
 con <- scidb::scidbconnect()
 afl <- "between(mod13q1_512, 52800, 43200, 0, 52800, 43200, 500)"
 res <- scidb::iquery(db = con, query = afl, return = TRUE, binary = FALSE)
 time_id <- res$time_id
 (scidbutil::missingtids(tid = time_id))
 ```
+
+
+## Compute cell centers in MODIS sinusoidal coordinates
+```{r}
+library(scidbutil)
+col_id <- seq(from  = 57084, to = 57104)
+row_id <- seq(from  = 46857, to = 46881)
+crids <- as.matrix(expand.grid(col_id, row_id))
+names(crids) <- c("col_id", "row_id")
+ps <- calcPixelSize(4800, calcTileWidth())
+head(getxyMatrix(colrowid.Matrix = crids, pixelSize = ps))
+```
+
+
