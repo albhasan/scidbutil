@@ -2,7 +2,7 @@
 % Please edit documentation in R/scidbutil.R
 \name{getxyMatrix}
 \alias{getxyMatrix}
-\title{Get the coordinates of the center of the given pixel}
+\title{Compute the coordinates of the center of the given pixels}
 \usage{
 getxyMatrix(colrowid.Matrix, pixelSize)
 }
@@ -15,7 +15,12 @@ getxyMatrix(colrowid.Matrix, pixelSize)
 A 2-column matrix
 }
 \description{
-Return the coords (MODIS synusoidal SR-ORG:6974) of the center of the given pixel
+Return the coords (MODIS Sinusoidal SR-ORG:6974) of the center of the given pixel
+}
+\examples{
+lonlat.mat <- matrix(data = c(-6790774.88,-853140.53,-6786172.69,-847462.74),
+              nrow = 2, byrow = TRUE)
+getxyMatrix(lonlat.mat, calcPixelSize(4800, calcTileWidth()))
 }
 \author{
 Alber Sanchez, \email{alber.ipia@inpe.br}

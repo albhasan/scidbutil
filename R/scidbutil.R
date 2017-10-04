@@ -379,15 +379,19 @@ getTimeFromHdfFilename <- function(hdfFilename){
 
 
 
-#' @title Get the coordinates of the center of the given pixel
+#' @title Compute the coordinates of the center of the given pixels
 #' @name getxyMatrix
 #' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
 #'
-#' @description Return the coords (MODIS synusoidal SR-ORG:6974) of the center of the given pixel
+#' @description Return the coords (MODIS Sinusoidal SR-ORG:6974) of the center of the given pixel
 #'
 #' @param colrowid.Matrix A numeric matrix with 2 columns: col_id and row_id
 #' @param pixelSize Pixel size in meters
 #' @return A 2-column matrix
+#' @examples
+#' lonlat.mat <- matrix(data = c(-6790774.88,-853140.53,-6786172.69,-847462.74),
+#'               nrow = 2, byrow = TRUE)
+#' getxyMatrix(lonlat.mat, calcPixelSize(4800, calcTileWidth()))
 #' @export
 getxyMatrix <- function(colrowid.Matrix, pixelSize){
   return(.getxyMatrix(colrowid.Matrix = colrowid.Matrix, pixelSize = pixelSize))

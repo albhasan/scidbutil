@@ -544,11 +544,6 @@
 
 
 
-#Return the coords (MODIS synusoidal SR-ORG:6974) of the center of the given pixel
-#
-# @param colrowid.Matrix A numeric matrix with 2 columns: col_id and row_id
-# @param pixelSize Pixel size in meters
-# @return A 2-column matrix
 .getxyMatrix <- function(colrowid.Matrix, pixelSize){
   x <- vector(mode = "numeric", length = length(nrow(colrowid.Matrix)))
   y <- vector(mode = "numeric", length = length(nrow(colrowid.Matrix)))
