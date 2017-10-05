@@ -17,6 +17,11 @@ A 2-column matrix (col_id and row_id)
 \description{
 Calculate the col_id & row_id corresponding to the given WGS84 coordinates
 }
+\examples{
+bbox <- matrix(c(minLon = -61.8061, maxLon = -61.16994, minLat = -8.110165,
+                 maxLat = -7.628022), ncol = 2)
+wgs84gmpi(lonlat.mat = bbox, pixelSize = calcPixelSize(4800, calcTileWidth()))
+}
 \author{
 Alber Sanchez, \email{alber.ipia@inpe.br}
 }

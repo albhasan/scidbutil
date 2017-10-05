@@ -457,6 +457,10 @@ sinusoidal2gmpi <- function(lonlat.mat, pixelSize){
 #' @param lonlat.mat A numeric matrix with 2 columns: lon and lat on WGS84
 #' @param pixelSize Pixel size in meters
 #' @return A 2-column matrix (col_id and row_id)
+#' @examples
+#' bbox <- matrix(c(minLon = -61.8061, maxLon = -61.16994, minLat = -8.110165,
+#'                  maxLat = -7.628022), ncol = 2)
+#' wgs84gmpi(lonlat.mat = bbox, pixelSize = calcPixelSize(4800, calcTileWidth()))
 #' @export
 wgs84gmpi <- function(lonlat.mat, pixelSize){
   return(.wgs84gmpi(lonlat.mat = lonlat.mat, pixelSize = pixelSize))

@@ -7,22 +7,22 @@ vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
----
-
-
-
-The `scidbutil` package provides a set of utlitary functions for working with multidimensional arrays of Earth observation data hosted in [SciDB](http://scidb.org/). This vignette is meant to introduce users to some usage examples.
-
-
-
-## Coordinate transformation: WGS84 to MODIS sinusoidal
-
-MODIS uses a [synusoidal projection](https://en.wikipedia.org/wiki/Sinusoidal_projection) to spatially represent their [data](https://code.env.duke.edu/projects/mget/wiki/SinusoidalMODIS). The SR-ORG code of this projection is [6974](http://spatialreference.org/ref/sr-org/6974/).
-
-A common task while working with MODIS data is to transform coordinates from and to MODIS sinusoidal projection. Below, we present the case of [WGS84](https://en.wikipedia.org/wiki/WGS84).
-
-
-```{r}
+  ---
+  
+  
+  
+  The `scidbutil` package provides a set of utlitary functions for working with multidimensional arrays of Earth observation data hosted in [SciDB](http://scidb.org/). This vignette is meant to introduce users to some usage examples.
+  
+  
+  
+  ## Coordinate transformation: WGS84 to MODIS sinusoidal
+  
+  MODIS uses a [synusoidal projection](https://en.wikipedia.org/wiki/Sinusoidal_projection) to spatially represent their [data](https://code.env.duke.edu/projects/mget/wiki/SinusoidalMODIS). The SR-ORG code of this projection is [6974](http://spatialreference.org/ref/sr-org/6974/).
+  
+  A common task while working with MODIS data is to transform coordinates from and to MODIS sinusoidal projection. Below, we present the case of [WGS84](https://en.wikipedia.org/wiki/WGS84).
+  
+  
+  ```{r}
 library(scidbutil)
 library(sp)
 
@@ -99,3 +99,11 @@ head(getxyMatrix(colrowid.Matrix = crids, pixelSize = ps))
 ```
 
 
+## Compute col_id & row_id from WGS84 coordinates
+```{r}
+library(scidbutil)
+# Manicore Amazonas, Brazil
+bbox <- matrix(c(minLon = -61.8061, maxLon = -61.16994, minLat = -8.110165, 
+                 maxLat = -7.628022), ncol = 2)
+wgs84gmpi(lonlat.mat = bbox, pixelSize = calcPixelSize(4800, calcTileWidth()))
+```
