@@ -14,7 +14,8 @@ Depends:
 Imports:
     scidb,
     sp, 
-    rgdal
+    rgdal, 
+    R.utils
 Suggests:
     testthat ,
     knitr,

@@ -1,6 +1,7 @@
 #---- SCIDB FUNCTIONS ----
 
-
+#---- TODO: ----
+# move actual code to each function
 
 #' @title Get data over a SciDB connection of a bounding box
 #' @name getSdbDataFromBB

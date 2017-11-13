@@ -743,6 +743,28 @@
 
 
 
+# Invert strings
+#
+# @param x            A vector made of strings
+# @return Character   A vector where the characters of each string are inverted
+.invertString <- function(x){
+  sapply(lapply(strsplit(x, NULL), rev), paste, collapse="")
+}
+
+
+
+# Cast a string to logical
+#
+# @param val  A character. It an take the values "0" or "1"
+# @return     A logical. False if val is "0" and True if val is "1"
+.tn2bool <- function(val){
+  if(val == "0") return(FALSE)
+  if(val == "1") return(TRUE)
+  return(NA)
+}
+
+
+
 # ---- DEPRECATED ----
 
 
