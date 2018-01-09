@@ -145,26 +145,15 @@ text2date <- function(dateAsText){
 #' @param origin An int. A YYYYMMDD date. The day when the time_id == 0
 #' @param period An int. The number of days between observations
 #' @param yearly A boolean. Do the dates yearly match January the 1st?
-#' @return       An integer. The time_id matching ymd or 0 (the first id) is ymd doesn't match
+#' @return       An integer vector. The time_id matching ymd or 0 (the first id) is ymd doesn't match
 #' @export
 ymd2tid <- function(ymd, origin, period, yearly){
-  res = 0
-  dy = 0
-  # cast YYYYDDMMs to numbers
-  ymd.dvec <- .ymd2ymd(ymd)
-  origin.dvec <- .ymd2ymd(origin)
-  dtymd <- as.Date(paste(ymd.dvec['year'], ymd.dvec['month'], ymd.dvec['day'], sep = "/"), origin = "1970-01-01")
-  dtor <- as.Date(paste(origin.dvec['year'], origin.dvec['month'], origin.dvec['day'], sep = "/"), origin = "1970-01-01")
-  if(yearly){
-    dy <- round(365/period)                                                     # periods per year
-    dtor <- as.Date(paste(ymd.dvec['year'], 1, 1, sep = "/"), origin = "1970-01-01")
-  }
-  ndays <- as.integer(difftime(time1 = dtymd, time2 = dtor, units = "days"))    # days from origin to ymd
-  if(ndays %% period == 0){
-    res <- ndays/period + (ymd.dvec['year'] - origin.dvec['year']) * dy
-    names(res) <- "time_id"
-  }
-  return(res)
+  # image, origin, period, yearly
+  # [MOD09Q1, 20000101, 8, True]
+  # [MOD13Q1, 20000101, 16, True]
+  # [LD5Original-DigitalNumber, 19840411, 16, False]
+  # [LD8Original-DigitalNumber, 20130319, 16, False]
+  return(unlist(lapply(ymd, .ymd2tid, origin = origin, period = period, yearly = yearly)))
 }
 
 
@@ -179,26 +168,31 @@ ymd2tid <- function(ymd, origin, period, yearly){
 #' @param origin An int. A YYYYMMDD date. The day when the time_id == 0
 #' @param period An int. The number of days between observations
 #' @param yearly A boolean. Do the dates yearly match January the 1st?
-#' @return       An integer. The time_id matching ymd or 0 (the first id) is ymd doesn't match
+#' @return       An integer vector. The time_id matching ymd or 0 (the first id) is ymd doesn't match
 #' @export
 ymd2tid_approx <- function(ymd, origin, period, yearly){
-  res = 0
-  dy = 0
-  # cast YYYYDDMMs to numbers
-  ymd.dvec <- .ymd2ymd(ymd)
-  origin.dvec <- .ymd2ymd(origin)
-  dtymd <- as.Date(paste(ymd.dvec['year'], ymd.dvec['month'], ymd.dvec['day'], sep = "/"), origin = "1970-01-01")
-  dtor <- as.Date(paste(origin.dvec['year'], origin.dvec['month'], origin.dvec['day'], sep = "/"), origin = "1970-01-01")
-  if(yearly){
-    dy <- round(365/period)                                                     # periods per year
-    dtor <- as.Date(paste(ymd.dvec['year'], 1, 1, sep = "/"), origin = "1970-01-01")
-  }
-  ndays <- as.integer(difftime(time1 = dtymd, time2 = dtor, units = "days"))    # days from origin to ymd
-  #if(ndays %% period == 0){
-  res <- ndays/period + (ymd.dvec['year'] - origin.dvec['year']) * dy
-  names(res) <- "time_id"
-  #}
-  return(res)
+  # image, origin, period, yearly
+  # [MOD09Q1, 20000101, 8, True]
+  # [MOD13Q1, 20000101, 16, True]
+  # [LD5Original-DigitalNumber, 19840411, 16, False]
+  # [LD8Original-DigitalNumber, 20130319, 16, False]
+  return(unlist(lapply(ymd, .ymd2tid_approx, origin = origin, period = period, yearly = yearly)))
+}
+
+
+
+#' @title Split a date into parts
+#' @name ymd2ymd
+#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
+#'
+#' @description Split a date into its numeric parts
+#'
+#' @param ymd    An int YYYYMMDD
+#' @return       A list of 3 integer vectors (year, month, day)
+#' @export
+ymd2ymd <- function(ymd){
+  res <- as.data.frame(do.call(rbind, lapply(ymd, .ymd2ymd)), stringsAsFactors = F)
+  return(list(year = res$year, month = res$month, day = res$day))
 }
 
 
@@ -345,6 +339,20 @@ date2ydoy <- function(dateAsText){
 
 
 #---- util ----
+
+
+# Split a YYYYMMDD date into its parts
+#
+# @param ymd    An int YYYYMMDD
+# @return       An int vector with the year, month, and day
+.ymd2ymd <- function(ymd){
+  y <- ymd %/% 10000
+  m <- (ymd - y * 10000) %/% 100
+  d <- (ymd - y * 10000 - m * 100)
+  return(c(year = y, month = m, day = d))
+}
+
+
 # Is the given year a leap year?
 #
 # @param year An int. The year
@@ -388,20 +396,53 @@ date2ydoy <- function(dateAsText){
 }
 
 
-# Split a YYYYMMDD date into its parts
-#
-# @param ymd    An int YYYYMMDD
-# @return       An int vector with the year, month, and day
-.ymd2ymd <- function(ymd){
-  y <- floor(ymd / 10000)
-  m <- floor((ymd - y * 10000)/100)
-  d <- (ymd - y * 10000 - m * 100)
-  return(c(year = y, month = m, day = d))
-}
-
-
 
 .ydoy2dateHelper <- function(i, year.vec, doy.vec){
   ymd <- .ydoy2dateHelper2(year = year.vec[i], doy = doy.vec[i])
   return(paste(ymd['year'], ymd['month'], ymd['day'], sep = "/"))
+}
+
+
+
+
+.ymd2tid <- function(ymd, origin, period, yearly){
+  res = 0
+  dy = 0
+  # cast YYYYDDMMs to numbers
+  ymd.dvec <- .ymd2ymd(ymd)
+  origin.dvec <- .ymd2ymd(origin)
+  dtymd <- as.Date(paste(ymd.dvec['year'], ymd.dvec['month'], ymd.dvec['day'], sep = "/"), origin = "1970-01-01")
+  dtor <- as.Date(paste(origin.dvec['year'], origin.dvec['month'], origin.dvec['day'], sep = "/"), origin = "1970-01-01")
+  if(yearly){
+    dy <- round(365/period)                                                     # periods per year
+    dtor <- as.Date(paste(ymd.dvec['year'], 1, 1, sep = "/"), origin = "1970-01-01")
+  }
+  ndays <- as.integer(difftime(time1 = dtymd, time2 = dtor, units = "days"))    # days from origin to ymd
+  if(ndays %% period == 0){
+    res <- ndays/period + (ymd.dvec['year'] - origin.dvec['year']) * dy
+    names(res) <- "time_id"
+  }
+  return(res)
+}
+
+
+
+.ymd2tid_approx <- function(ymd, origin, period, yearly){
+  res = 0
+  dy = 0
+  # cast YYYYDDMMs to numbers
+  ymd.dvec <- .ymd2ymd(ymd)
+  origin.dvec <- .ymd2ymd(origin)
+  dtymd <- as.Date(paste(ymd.dvec['year'], ymd.dvec['month'], ymd.dvec['day'], sep = "/"), origin = "1970-01-01")
+  dtor <- as.Date(paste(origin.dvec['year'], origin.dvec['month'], origin.dvec['day'], sep = "/"), origin = "1970-01-01")
+  if(yearly){
+    dy <- round(365/period)                                                     # periods per year
+    dtor <- as.Date(paste(ymd.dvec['year'], 1, 1, sep = "/"), origin = "1970-01-01")
+  }
+  ndays <- as.integer(difftime(time1 = dtymd, time2 = dtor, units = "days"))    # days from origin to ymd
+  #if(ndays %% period == 0){
+  res <- ndays/period + (ymd.dvec['year'] - origin.dvec['year']) * dy
+  names(res) <- "time_id"
+  #}
+  return(res)
 }

@@ -121,14 +121,6 @@ testthat::expect_equal(as.vector(tid), expected = 2.125)
 
 
 
-dvec <- ymd2ymd(ymd = 20000101)
-testthat::expect_equal(as.vector(dvec), expected = c(2000, 1, 1))
-
-dvec <- ymd2ymd(ymd = 20001231)
-testthat::expect_equal(as.vector(dvec), expected = c(2000, 12, 31))
-
-dvec <- ymd2ymd(ymd = 20000231)
-testthat::expect_equal(as.vector(dvec), expected = c(2000, 02, 31))
 
 
 
@@ -159,9 +151,17 @@ ymd2tid(ymd = 20010101, origin = 20000101, period = 16, yearly = TRUE)
 
 
 
+testthat::expect_equal(ymd2ymd(20000101), list(year = 2000, month = 01, day = 01))
+testthat::expect_equal(ymd2ymd(20000231), list(year = 2000, month = 02, day = 31))
+testthat::expect_equal(ymd2ymd(20001231), list(year = 2000, month = 12, day = 31))
+testthat::expect_equal(ymd2ymd(20100101), list(year = 2010, month = 01, day = 01))
+testthat::expect_equal(ymd2ymd(20101231), list(year = 2010, month = 12, day = 31))
 
-testthat::expect_equal(ymd2ymd(20100101), c(year = 2010, month = 01, day = 01))
-testthat::expect_equal(ymd2ymd(20101231), c(year = 2010, month = 12, day = 31))
+
+
+
+
+
 
 testthat::expect_equal(as.vector(ymd2tid(20000101, 20000101, 8, T)), 0)
 testthat::expect_equal(as.vector(ymd2tid(20000109, 20000101, 8, T)), 1)

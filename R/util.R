@@ -64,21 +64,6 @@ substrRight <- function(x, n){
 
 
 
-#' @title Split a date into parts
-#' @name ymd2ymd
-#' @author Alber Sanchez, \email{alber.ipia@@inpe.br}
-#'
-#' @description Split a date into its numeric parts
-#'
-#' @param ymd    An int YYYYMMDD
-#' @return       An integer vector (year, month, day)
-#' @export
-ymd2ymd <- function(ymd){
-  y = ymd %/% 10000
-  m = (ymd - y * 10000) %/% 100
-  d = (ymd - y * 10000 - m * 100)
-  return(c(year = y, month = m, day = d))
-}
 
 
 
