@@ -22,7 +22,7 @@ vignette: >
   A common task while working with MODIS data is to transform coordinates from and to MODIS sinusoidal projection. Below, we present the case of [WGS84](https://en.wikipedia.org/wiki/WGS84).
   
   
-  ```{r}
+```{r}
 library(scidbutil)
 library(sp)
 
